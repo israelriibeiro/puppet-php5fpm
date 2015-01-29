@@ -94,7 +94,7 @@ define php5fpm::config (
 
   # Cleans up configs not managed by php5-fpm module
   exec { "cleanup-pool-${name}":
-    cwd     => $php5fpm::config_dir,
+    cwd     => $real_pool_path,
     path    => "/usr/bin:/usr/sbin:/bin",
     command => "find -name '[^0-9]*.conf' -exec rm {} +",
     unless  => "test -z $(find -name '[^0-9]*.conf')",
