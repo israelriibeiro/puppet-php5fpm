@@ -22,7 +22,8 @@ class php5fpm::params {
   }
 
   $service = $::operatingsystem ? {
-    default => 'php5-fpm',
+    /(?i:RedHat|Centos|Scientific|Fedora|Amazon|Linux)/ => 'php-fpm',
+    default                                             => 'php5-fpm',
   }
 
   $service_status = $::operatingsystem ? {

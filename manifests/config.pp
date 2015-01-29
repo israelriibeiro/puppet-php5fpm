@@ -65,10 +65,16 @@ define php5fpm::config (
     default => $content,
   }
 
+  $real_pool_path = $::operatingsystem ? {
+    /(?i:Debian|Ubuntu|Mint)/                           => "${php5fpm::config_dir}/pool.d",
+    /(?i:RedHat|Centos|Scientific|Fedora|Amazon|Linux)/ => $php5fpm::config_dir,
+    default                                             => $php5fpm::config_dir
+  }
+
   file { "${order}-${name}.conf":
     ensure  => $ensure,
-    path    => "${php5fpm::config_dir}/pool.d/${order}-${name}.conf",
-    content => template("${real_content}"),
+    path    => "${real_pool_path}/${order}-${name}.conf",
+    content => template($real_content),
     mode    => '0644',
     owner   => root,
     group   => root,
@@ -88,7 +94,7 @@ define php5fpm::config (
 
   # Cleans up configs not managed by php5-fpm module
   exec { "cleanup-pool-${name}":
-    cwd     => "${php5fpm::config_dir}/pool.d/",
+    cwd     => $php5fpm::config_dir,
     path    => "/usr/bin:/usr/sbin:/bin",
     command => "find -name '[^0-9]*.conf' -exec rm {} +",
     unless  => "test -z $(find -name '[^0-9]*.conf')",
